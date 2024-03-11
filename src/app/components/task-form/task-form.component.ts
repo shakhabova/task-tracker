@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { TaskPriority, TaskStatus } from '../../models/task.model';
+import { MatOptionModule } from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'app-task-form',
@@ -18,6 +20,8 @@ import { TaskPriority, TaskStatus } from '../../models/task.model';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatOptionModule,
+    MatSelectModule
   ],
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.css'],
@@ -32,6 +36,12 @@ export class TaskFormComponent {
     status: [TaskStatus.ToDo],
   });
   
+  statusOptions: { label: string; value: TaskStatus }[] = [
+    { label: 'To Do', value: TaskStatus.ToDo },
+    { label: 'In Progress', value: TaskStatus.InProgress },
+    { label: 'Done', value: TaskStatus.Done },
+  ]
+
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<TaskFormComponent>
@@ -40,4 +50,5 @@ export class TaskFormComponent {
   cancel() {
     this.dialogRef.close();
   }
+
 }

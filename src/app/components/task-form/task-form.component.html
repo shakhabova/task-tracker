@@ -6,6 +6,33 @@
     <mat-label>Caption</mat-label>
     <input matInput formControlName="caption">
   </mat-form-field>
+  <mat-form-field>
+    <mat-label>Description</mat-label>
+    <textarea matInput></textarea>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>deadlineDate</mat-label>
+    <input matInput formControlName="deadlineDate">
+  </mat-form-field>
+    <mat-form-field>
+    <mat-label>Assignee</mat-label>
+    <input matInput formControlName="assignee">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Priority</mat-label>
+    <mat-select>
+      <mat-option value="one">First option</mat-option>
+      <mat-option value="two">Second option</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Task Status</mat-label>
+    <mat-select>
+      @for(let option of statusOptions; trackBy option.value) {
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="cancel()">Cancel</button>
