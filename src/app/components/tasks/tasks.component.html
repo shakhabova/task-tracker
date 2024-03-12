@@ -1,7 +1,11 @@
 <div class="all-tasks">
   <h1>All Tasks</h1>
   @for(task of tasks$ | async; track task.id) {
-    <app-task-item [task]="task"></app-task-item>
+    <app-task-item 
+      [task]="task"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+    ></app-task-item>
   }
-  <button mat-raised-button color="accent" (click)="add()">Add new task</button>
+  <button mat-raised-button color="accent" (click)="onAdd()">Add new task</button>
 </div>

@@ -1,6 +1,19 @@
 <span> {{ task.caption }} </span>
-<div>
+<div class="actions-wrapper">
   <span> {{ task.deadlineDate | date }} </span>
   <span> {{ task.priority }} </span>
   <span> {{ task.assignee[0] }}. </span>
+  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
 </div>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="edit.emit(task)">
+    <mat-icon>edit</mat-icon>
+    <span>Edit</span>
+  </button>
+  <button mat-menu-item (click)="delete.emit(task)">
+    <mat-icon>delete</mat-icon>
+    <span>Delete</span>
+  </button>
+</mat-menu>
