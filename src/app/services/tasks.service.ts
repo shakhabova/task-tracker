@@ -16,6 +16,7 @@ export class TasksService {
     }
 
     add(task: TaskAddModel): Observable<void> {
+        console.log('hoho')
         return this.tasksSource.add(task);
     }
 

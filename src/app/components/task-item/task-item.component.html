@@ -1,6 +1,6 @@
-<span> Task 1 </span>
+<span> {{ task.caption }} </span>
 <div>
-  <span> 09.03.2024 </span>
-  <span> P. </span>
-  <span> А. Ш.</span>
+  <span> {{ task.deadlineDate | date }} </span>
+  <span> {{ task.priority }} </span>
+  <span> {{ task.assignee[0] }}. </span>
 </div>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Task, TaskAddModel } from '../models/task.model';
-import { Observable, ReplaySubject, map, take } from 'rxjs';
+import { Observable, ReplaySubject, map, take, tap } from 'rxjs';
 
 const TASKS_STORAGE_KEY = 'TASKS_LOCAL_STORAGE_KEY';
 
@@ -30,33 +30,33 @@ export class TasksSourceService {
         };
         return this.tasks$
             .pipe(
+                take(1),
                 map(tasks => {
                     tasks.push(newTask);
                     this.updateTasksList(tasks);
                 }),
-                take(1),
             );
     }
 
     update(updatedTask: Task): Observable<void> {
         return this.tasks$
             .pipe(
+                take(1),
                 map(tasks => {
                     tasks = tasks.map(task => task.id === updatedTask.id ? updatedTask : task);
                     this.updateTasksList(tasks);
                 }),
-                take(1),
             );
     }
 
     delete(deletingTaskId: Task['id']): Observable<void> {
         return this.tasks$
             .pipe(
+                take(1),
                 map(tasks => {
                     tasks = tasks.filter(task => task.id !== deletingTaskId);
                     this.updateTasksList(tasks);
                 }),
-                take(1),
             );
     }
 

@@ -1,41 +1,44 @@
 <h2 mat-dialog-title>Add new Task</h2>
 <mat-dialog-content [formGroup]="taskForm">
-
-  <p>What's your favorite animal?</p>
   <mat-form-field>
     <mat-label>Caption</mat-label>
-    <input matInput formControlName="caption">
+    <input cdkFocusInitial matInput formControlName="caption" />
+    @if(taskForm.controls.caption.hasError('required')) {
+    <mat-error>Caption field is required</mat-error>
+    }
   </mat-form-field>
   <mat-form-field>
     <mat-label>Description</mat-label>
-    <textarea matInput></textarea>
+    <textarea matInput formControlName="description"></textarea>
   </mat-form-field>
   <mat-form-field>
-    <mat-label>deadlineDate</mat-label>
-    <input matInput formControlName="deadlineDate">
+    <mat-label>Deadline Date</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="deadlineDate" />
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
-    <mat-form-field>
+  <mat-form-field>
     <mat-label>Assignee</mat-label>
-    <input matInput formControlName="assignee">
+    <input matInput formControlName="assignee" />
   </mat-form-field>
   <mat-form-field>
     <mat-label>Priority</mat-label>
-    <mat-select>
-      <mat-option value="one">First option</mat-option>
-      <mat-option value="two">Second option</mat-option>
+    <mat-select formControlName="priority">
+      @for(option of priorityOptions; track option.value) {
+      <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
     </mat-select>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Task Status</mat-label>
-    <mat-select>
-      @for(let option of statusOptions; trackBy option.value) {
-        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+    <mat-select formControlName="status">
+      @for(option of statusOptions; track option.value) {
+      <mat-option [value]="option.value">{{ option.label }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="cancel()">Cancel</button>
-  <button mat-button [mat-dialog-close]="taskForm.value" cdkFocusInitial>Add</button>
+  <button mat-button (click)="save()">Add</button>
 </mat-dialog-actions>
-

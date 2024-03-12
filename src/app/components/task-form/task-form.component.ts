@@ -1,14 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { TaskPriority, TaskStatus } from '../../models/task.model';
-import { MatOptionModule } from '@angular/material/core';
-import {MatSelectModule} from '@angular/material/select';
+import {
+  MatOptionModule,
+  provideNativeDateAdapter,
+} from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+
+interface SelectOption<T = string> {
+  label: string;
+  value: T;
+}
 
 @Component({
   selector: 'app-task-form',
@@ -21,34 +30,50 @@ import {MatSelectModule} from '@angular/material/select';
     MatInputModule,
     MatButtonModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDatepickerModule,
   ],
   templateUrl: './task-form.component.html',
-  styleUrls: ['./task-form.component.css'],
+  styleUrls: ['./task-form.component.scss'],
+  providers: [provideNativeDateAdapter()],
 })
 export class TaskFormComponent {
+  private formBuilder = inject(FormBuilder);
+  private dialogRef = inject(MatDialogRef<TaskFormComponent>);
+
   taskForm = this.formBuilder.group({
-    caption: [''],
-    description: [''],
-    deadlineDate: [''],
-    priority: [TaskPriority.Medium],
-    assignee: [''],
-    status: [TaskStatus.ToDo],
+    caption: ['', Validators.required],
+    description: ['', Validators.required],
+    deadlineDate: ['', Validators.required],
+    priority: [TaskPriority.Medium, Validators.required],
+    assignee: ['', Validators.required],
+    status: ['to_do', Validators.required],
   });
-  
-  statusOptions: { label: string; value: TaskStatus }[] = [
+
+  minDate = new Date();
+
+  priorityOptions: SelectOption<TaskPriority>[] = [
+    { label: 'Lowest', value: TaskPriority.Lowest },
+    { label: 'Low', value: TaskPriority.Low },
+    { label: 'Medium', value: TaskPriority.Medium },
+    { label: 'High', value: TaskPriority.High },
+    { label: 'Highest', value: TaskPriority.Highest },
+  ];
+  statusOptions: SelectOption<TaskStatus>[] = [
     { label: 'To Do', value: TaskStatus.ToDo },
     { label: 'In Progress', value: TaskStatus.InProgress },
     { label: 'Done', value: TaskStatus.Done },
-  ]
+  ];
 
-  constructor(
-    private formBuilder: FormBuilder,
-    public dialogRef: MatDialogRef<TaskFormComponent>
-  ) {}
+  save() {
+    if (this.taskForm.invalid) {
+      return;
+    }
+
+    this.dialogRef.close(this.taskForm.value);
+  }
 
   cancel() {
     this.dialogRef.close();
   }
-
 }
