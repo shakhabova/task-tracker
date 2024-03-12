@@ -1,0 +1,16 @@
+<span class="value-section">
+  Order by:
+  <mat-button-toggle-group [(value)]="currentValue" (valueChange)="onChange()">
+    <mat-button-toggle value="deadlineDate">deadline</mat-button-toggle>
+    <mat-button-toggle value="status">status</mat-button-toggle>
+    <mat-button-toggle value="assignee">assignee</mat-button-toggle>
+  </mat-button-toggle-group>
+</span>
+
+<span class="dir-section">
+  Direction:
+  <mat-button-toggle-group [(value)]="currentDirection" (valueChange)="onChange()">
+    <mat-button-toggle value="asc">asc</mat-button-toggle>
+    <mat-button-toggle value="desc">desc</mat-button-toggle>
+  </mat-button-toggle-group>
+</span>

@@ -74,6 +74,14 @@ export class TaskFormComponent implements OnInit {
     return !!this.data;
   }
 
+  get title(): string {
+    return this.isEdit ? 'Edit Task' : 'Add new Task';
+  }
+
+  get saveLabel(): string {
+    return this.isEdit ? 'Edit' : 'Add';
+  }
+
   save() {
     if (this.taskForm.invalid) {
       return;

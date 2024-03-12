@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Add new Task</h2>
+<h2 mat-dialog-title>{{ title }}</h2>
 <mat-dialog-content [formGroup]="taskForm">
   <mat-form-field>
     <mat-label>Caption</mat-label>
@@ -40,5 +40,5 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button (click)="cancel()">Cancel</button>
-  <button mat-button (click)="save()">Add</button>
+  <button mat-button (click)="save()">{{ saveLabel }}</button>
 </mat-dialog-actions>

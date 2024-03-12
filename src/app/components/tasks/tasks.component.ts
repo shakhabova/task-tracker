@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { TaskItemComponent } from '../task-item/task-item.component';
@@ -12,13 +17,20 @@ import { TasksService } from 'src/app/services/tasks.service';
 import { filter, switchMap, take } from 'rxjs';
 import { Task, TaskAddModel } from 'src/app/models/task.model';
 import { AsyncPipe } from '@angular/common';
+import { OrderByComponent, SortModel } from '../order-by/order-by.component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
   standalone: true,
-  imports: [AsyncPipe, MatButtonModule, TaskItemComponent, MatDialogModule],
+  imports: [
+    AsyncPipe,
+    MatButtonModule,
+    TaskItemComponent,
+    MatDialogModule,
+    OrderByComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TasksComponent {
@@ -28,13 +40,22 @@ export class TasksComponent {
 
   tasks$ = this.tasksService.getAll();
 
+  onOrderChange(order: SortModel) {
+    this.tasks$ = this.tasksService.getAll(order);
+  }
+
   onAdd() {
-    const dialogRef = this.dialog.open<TaskFormComponent, unknown, TaskAddModel>(TaskFormComponent);
-    dialogRef.afterClosed()
+    const dialogRef = this.dialog.open<
+      TaskFormComponent,
+      unknown,
+      TaskAddModel
+    >(TaskFormComponent);
+    dialogRef
+      .afterClosed()
       .pipe(
-        filter(res => !!res),
-        switchMap(task => this.tasksService.add(task!)),
-        takeUntilDestroyed(this.destroyRef$),
+        filter((res) => !!res),
+        switchMap((task) => this.tasksService.add(task!)),
+        takeUntilDestroyed(this.destroyRef$)
       )
       .subscribe();
   }
@@ -43,24 +64,24 @@ export class TasksComponent {
     const dialogRef = this.dialog.open<TaskFormComponent, Task, Task>(
       TaskFormComponent,
       {
-        data: task
+        data: task,
       }
     );
 
-    dialogRef.afterClosed()
+    dialogRef
+      .afterClosed()
       .pipe(
-        filter(res => !!res),
-        switchMap(task => this.tasksService.update(task!)),
-        takeUntilDestroyed(this.destroyRef$),
+        filter((res) => !!res),
+        switchMap((task) => this.tasksService.update(task!)),
+        takeUntilDestroyed(this.destroyRef$)
       )
       .subscribe();
   }
 
   onDelete(task: Task) {
-    this.tasksService.delete(task.id)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef$),
-      )
+    this.tasksService
+      .delete(task.id)
+      .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe();
   }
 }

@@ -1,5 +1,8 @@
 <div class="all-tasks">
   <h1>All Tasks</h1>
+  <div>
+    <app-order-by (change)="onOrderChange($event)"></app-order-by>
+  </div>
   @for(task of tasks$ | async; track task.id) {
     <app-task-item 
       [task]="task"
