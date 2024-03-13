@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
@@ -10,14 +9,14 @@ import { TaskItemComponent } from '../task-item/task-item.component';
 import {
   MatDialog,
   MatDialogModule,
-  MatDialogRef,
 } from '@angular/material/dialog';
 import { TaskFormComponent } from '../task-form/task-form.component';
 import { TasksService } from 'src/app/services/tasks.service';
-import { filter, switchMap, take } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { Task, TaskAddModel } from 'src/app/models/task.model';
 import { AsyncPipe } from '@angular/common';
 import { OrderByComponent, SortModel } from '../order-by/order-by.component';
+import { FilterComponent, FilterModel } from '../filter/filter.component';
 
 @Component({
   selector: 'app-tasks',
@@ -30,8 +29,8 @@ import { OrderByComponent, SortModel } from '../order-by/order-by.component';
     TaskItemComponent,
     MatDialogModule,
     OrderByComponent,
+    FilterComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TasksComponent {
   private dialog = inject(MatDialog);
@@ -40,8 +39,26 @@ export class TasksComponent {
 
   tasks$ = this.tasksService.getAll();
 
-  onOrderChange(order: SortModel) {
-    this.tasks$ = this.tasksService.getAll(order);
+  private filters?: FilterModel;
+  private sort?: SortModel;
+
+  openFiltersModal() {
+    const dialogRef = this.dialog.open<FilterComponent, unknown, FilterModel>(FilterComponent);
+
+    dialogRef.afterClosed()
+      .pipe(
+        filter(res => !!res),
+        takeUntilDestroyed(this.destroyRef$),
+      )
+      .subscribe(filters => {
+        this.filters = filters;
+        this.updateTasksList();
+      })
+  }
+
+  onOrderChange(sort: SortModel) {
+    this.sort = sort;
+    this.updateTasksList();
   }
 
   onAdd() {
@@ -83,5 +100,9 @@ export class TasksComponent {
       .delete(task.id)
       .pipe(takeUntilDestroyed(this.destroyRef$))
       .subscribe();
+  }
+
+  private updateTasksList() {
+    this.tasks$ = this.tasksService.getAll(this.filters, this.sort);
   }
 }

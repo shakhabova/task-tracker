@@ -1,6 +1,7 @@
 <div class="all-tasks">
   <h1>All Tasks</h1>
-  <div>
+  <div class="list-actions">
+    <button mat-button (click)="openFiltersModal()">Filters</button>
     <app-order-by (change)="onOrderChange($event)"></app-order-by>
   </div>
   @for(task of tasks$ | async; track task.id) {

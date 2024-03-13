@@ -2,7 +2,7 @@
 <mat-dialog-content [formGroup]="taskForm">
   <mat-form-field>
     <mat-label>Caption</mat-label>
-    <input cdkFocusInitial matInput formControlName="caption" />
+    <input matInput formControlName="caption" />
     @if(taskForm.controls.caption.hasError('required')) {
     <mat-error>Caption field is required</mat-error>
     }
@@ -39,6 +39,6 @@
   </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-button mat-dialog-close>Cancel</button>
   <button mat-button (click)="save()">{{ saveLabel }}</button>
 </mat-dialog-actions>

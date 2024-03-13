@@ -1,26 +1,37 @@
 import { Injectable } from '@angular/core';
 import { Task, TaskAddModel } from '../models/task.model';
-import { Observable, ReplaySubject, map, take, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, of } from 'rxjs';
 import { SortModel } from '../components/order-by/order-by.component';
+import { FilterModel } from '../components/filter/filter.component';
 
 const TASKS_STORAGE_KEY = 'TASKS_LOCAL_STORAGE_KEY';
 const DEFAULT_SORT: SortModel = { value: 'deadlineDate', direction: 'asc' };
 
 @Injectable({ providedIn: 'root' })
 export class TasksSourceService {
-  private readonly tasks$ = new ReplaySubject<Task[]>(1);
+  private readonly tasks$ = new BehaviorSubject<Task[]>(
+    this.readFromLocalStorage()
+  );
 
-  constructor() {
-    this.tasks$.next(this.readFromLocalStorage());
+  private get currentTasks(): Task[] {
+    return this.tasks$.value;
   }
 
-  getAll(sort?: SortModel): Observable<Task[]> {
-    return this.tasks$.asObservable()
+  getAll(filters?: FilterModel, sort?: SortModel): Observable<Task[]> {
+    return this.tasks$.asObservable().pipe(
+      map((tasks) => {
+        tasks = this.applySort(tasks, sort);
+        tasks = this.applyFilters(tasks, filters);
+        return tasks;
+      })
+    );
+  }
+
+  getAllAssignee(): Observable<string[]> {
+    return this.tasks$
+      .asObservable()
       .pipe(
-        map(tasks => {
-          tasks = this.applySort(tasks, sort);
-          return tasks;
-        })
+        map((tasks) => Array.from(new Set(tasks.map((task) => task.assignee))))
       );
   }
 
@@ -35,35 +46,24 @@ export class TasksSourceService {
       id: new Date().getTime(), // maybe use Window.crypto
       ...addingTask,
     };
-    return this.tasks$.pipe(
-      take(1),
-      map((tasks) => {
-        tasks.push(newTask);
-        this.updateTasksList(tasks);
-      })
-    );
+    this.updateTasksList([...this.currentTasks, newTask]);
+    return of();
   }
 
   update(updatedTask: Task): Observable<void> {
-    return this.tasks$.pipe(
-      take(1),
-      map((tasks) => {
-        tasks = tasks.map((task) =>
-          task.id === updatedTask.id ? updatedTask : task
-        );
-        this.updateTasksList(tasks);
-      })
+    const newTasks = this.currentTasks.map((task) =>
+      task.id === updatedTask.id ? updatedTask : task
     );
+    this.updateTasksList(newTasks);
+    return of();
   }
 
   delete(deletingTaskId: Task['id']): Observable<void> {
-    return this.tasks$.pipe(
-      take(1),
-      map((tasks) => {
-        tasks = tasks.filter((task) => task.id !== deletingTaskId);
-        this.updateTasksList(tasks);
-      })
+    const newTasks = this.currentTasks.filter(
+      (task) => task.id !== deletingTaskId
     );
+    this.updateTasksList(newTasks);
+    return of();
   }
 
   private applySort(tasks: Task[], sort?: SortModel): Task[] {
@@ -72,13 +72,48 @@ export class TasksSourceService {
 
     tasksCopy.sort((a, b) => {
       if (currentSort.direction === 'asc') {
-        return a[currentSort.value].toString().localeCompare(b[currentSort.value].toString());
+        return a[currentSort.value]
+          .toString()
+          .localeCompare(b[currentSort.value].toString());
       } else {
-        return b[currentSort.value].toString().localeCompare(a[currentSort.value].toString());
+        return b[currentSort.value]
+          .toString()
+          .localeCompare(a[currentSort.value].toString());
       }
     });
 
     return tasksCopy;
+  }
+
+  private applyFilters(tasks: Task[], filters?: FilterModel): Task[] {
+    if (!filters) {
+      return tasks;
+    }
+
+    return tasks.filter((task) => {
+      if (filters.status?.length && !filters.status.includes(task.status)) {
+        return false;
+      }
+
+      if (
+        filters.assignee?.length &&
+        !filters.assignee.includes(task.assignee)
+      ) {
+        return false;
+      }
+
+      if (filters.deadlineDate?.length === 2) {
+        const isInRange =
+          task.deadlineDate >= filters.deadlineDate[0] &&
+          task.deadlineDate <= filters.deadlineDate[1];
+
+        if (!isInRange) {
+          return false;
+        }
+      }
+
+      return true;
+    });
   }
 
   private updateTasksList(newTasks: Task[]): void {

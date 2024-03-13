@@ -1,18 +1,32 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
 import { Task, TaskPriority, TaskStatus } from '../../models/task.model';
-import {
-  MatOptionModule,
-  provideNativeDateAdapter,
-} from '@angular/material/core';
+import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+
+export const STATUS_OPTIONS: SelectOption<TaskStatus>[] = [
+  { label: 'To Do', value: TaskStatus.ToDo },
+  { label: 'In Progress', value: TaskStatus.InProgress },
+  { label: 'Done', value: TaskStatus.Done },
+];
+
+export const PRIORITY_OPTIONS: SelectOption<TaskPriority>[] = [
+  { label: 'Lowest', value: TaskPriority.Lowest },
+  { label: 'Low', value: TaskPriority.Low },
+  { label: 'Medium', value: TaskPriority.Medium },
+  { label: 'High', value: TaskPriority.High },
+  { label: 'Highest', value: TaskPriority.Highest },
+];
 
 interface SelectOption<T = string> {
   label: string;
@@ -35,7 +49,6 @@ interface SelectOption<T = string> {
   ],
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss'],
-  providers: [provideNativeDateAdapter()],
 })
 export class TaskFormComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
@@ -51,18 +64,8 @@ export class TaskFormComponent implements OnInit {
     status: ['to_do', Validators.required],
   });
 
-  priorityOptions: SelectOption<TaskPriority>[] = [
-    { label: 'Lowest', value: TaskPriority.Lowest },
-    { label: 'Low', value: TaskPriority.Low },
-    { label: 'Medium', value: TaskPriority.Medium },
-    { label: 'High', value: TaskPriority.High },
-    { label: 'Highest', value: TaskPriority.Highest },
-  ];
-  statusOptions: SelectOption<TaskStatus>[] = [
-    { label: 'To Do', value: TaskStatus.ToDo },
-    { label: 'In Progress', value: TaskStatus.InProgress },
-    { label: 'Done', value: TaskStatus.Done },
-  ];
+  priorityOptions = PRIORITY_OPTIONS;
+  statusOptions = STATUS_OPTIONS;
 
   ngOnInit(): void {
     if (this.isEdit) {
@@ -93,9 +96,5 @@ export class TaskFormComponent implements OnInit {
     }
 
     this.dialogRef.close(this.taskForm.value);
-  }
-
-  cancel() {
-    this.dialogRef.close();
   }
 }

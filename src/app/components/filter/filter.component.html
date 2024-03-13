@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>Filters</h2>
+
+<mat-dialog-content [formGroup]="formGroup">
+  Status
+  <mat-form-field>
+    <mat-label>Task Status</mat-label>
+    <mat-select multiple formControlName="status">
+      @for(option of statusOptions; track option.value) {
+      <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  Assignee
+  <mat-form-field>
+    <mat-label>Assignee</mat-label>
+    <mat-select multiple formControlName="assignee">
+      @for(option of assigneeOptions$ | async; track option) {
+      <mat-option [value]="option">{{ option }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  Deadline
+  <mat-form-field>
+    <mat-label>Deadline Date</mat-label>
+    <mat-date-range-input [rangePicker]="picker">
+      <input matStartDate formControlName="deadlineStart" placeholder="Start date">
+      <input matEndDate formControlName="deadlineEnd" placeholder="End date">
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="apply()">Apply</button>
+</mat-dialog-actions>

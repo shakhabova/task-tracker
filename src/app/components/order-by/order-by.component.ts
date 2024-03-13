@@ -1,5 +1,10 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Output,
+} from '@angular/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { Task } from 'src/app/models/task.model';
 
 export interface SortModel {
@@ -26,6 +31,9 @@ export class OrderByComponent {
       return;
     }
 
-    this.change.emit({ value: this.currentValue, direction: this.currentDirection });
+    this.change.emit({
+      value: this.currentValue,
+      direction: this.currentDirection,
+    });
   }
 }
