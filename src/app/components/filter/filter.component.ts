@@ -34,7 +34,7 @@ export type FilterModel = {
 export class FilterComponent {
   private tasksService = inject(TasksService);
   private formBuilder = inject(FormBuilder);
-  private dialogRef = inject(MatDialogRef<FilterComponent, FilterModel>)
+  private dialogRef = inject(MatDialogRef<FilterComponent, FilterModel>);
 
   formGroup = this.formBuilder.group({
     status: [''],
@@ -46,12 +46,12 @@ export class FilterComponent {
   statusOptions = STATUS_OPTIONS;
   assigneeOptions$ = this.tasksService.getAllAssignees();
 
-  apply() {
+  async apply() {
     const value = this.formGroup.value;
     this.dialogRef.close({
       status: value.status,
       assignee: value.assignee,
-      deadlineDate: [value.deadlineStart, value.deadlineEnd],
+      deadlineDate: value.deadlineEnd ? [value.deadlineStart, value.deadlineEnd] : null,
     });
   }
 }
